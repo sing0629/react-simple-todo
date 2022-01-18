@@ -1,10 +1,11 @@
 import {
   addDoc,
   collection,
-  getDocs,
   deleteDoc,
-  serverTimestamp,
   doc,
+  getDocs,
+  serverTimestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { Todo } from "../App";
 import { db } from "../firebase_config";
@@ -30,4 +31,14 @@ export const addTodo = async (text: string) => {
 export const delTodo = async (id: string) => {
   return deleteDoc(doc(db, "todos", id));
 };
-export const updateTodo = async () => {};
+export const updateTodo = async ({
+  id,
+  completed,
+}: {
+  id: string;
+  completed: boolean;
+}) => {
+  return updateDoc(doc(db, "todos", id), {
+    completed,
+  });
+};

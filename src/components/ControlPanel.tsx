@@ -4,7 +4,6 @@ import { Box, Button, ButtonGroup, TextField } from "@material-ui/core";
 import React, { FC, useState } from "react";
 import { useMutation } from "react-query";
 import { addTodo } from "../api/todo-api";
-import { delTodo } from "../api/todo-api";
 import { TodoFilter, useInvalidateTodo } from "../App";
 
 type ControlPanelProps = {

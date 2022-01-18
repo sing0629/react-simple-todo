@@ -12,23 +12,18 @@ import {
 import { DeleteForever } from "@material-ui/icons";
 import { FC } from "react";
 import { useMutation } from "react-query";
-import { delTodo } from "../api/todo-api";
+import { delTodo, updateTodo } from "../api/todo-api";
 import { useInvalidateTodo } from "../App";
 
 type TodoListItemProps = {
   id: string;
   text: string;
   completed: boolean;
-  onToggle: (id: string, value: boolean) => void;
 };
 
-const TodoListItem: FC<TodoListItemProps> = ({
-  id,
-  text,
-  completed,
-  onToggle,
-}) => {
+const TodoListItem: FC<TodoListItemProps> = ({ id, text, completed }) => {
   const { invalidateTodos } = useInvalidateTodo();
+
   const {
     mutateAsync: delTodoHandler,
     isLoading: isDeleting,
@@ -39,19 +34,38 @@ const TodoListItem: FC<TodoListItemProps> = ({
     },
   });
 
+  const {
+    mutateAsync: updateTodoHandler,
+    isLoading: isUpdating,
+    error: updateError,
+  } = useMutation(updateTodo, {
+    onSuccess: () => {
+      invalidateTodos();
+    },
+  });
+
+  const handleToggleUpdate = () => {
+    updateTodoHandler({
+      id,
+      completed: !completed,
+    });
+  };
+
   return (
     <ListItem
+      disabled={isUpdating}
       dense
       button
-      onClick={() => onToggle(id, !completed)}
+      onClick={handleToggleUpdate}
       disableRipple
     >
       <ListItemIcon>
         <Checkbox
+          disabled={isUpdating}
           edge="start"
           defaultChecked={completed}
-          checked={completed}
-          onChange={({ target: { checked } }) => onToggle(id, checked)}
+          checked={!completed}
+          onChange={handleToggleUpdate}
           disableRipple
         />
       </ListItemIcon>

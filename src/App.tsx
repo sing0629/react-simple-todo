@@ -41,19 +41,6 @@ function App() {
       ? todos
       : todos.filter((todo) => todo.completed === filter.completed);
 
-  const toggleTodoById = (id: string, value: boolean) => {
-    // setTodos((oldTodos) => {
-    //   return oldTodos.map((todoItem) => {
-    //     if (todoItem.id === id) {
-    //       // if match, change the completed value
-    //       return { ...todoItem, completed: value };
-    //     }
-    //     // remain unchanged
-    //     return todoItem;
-    //   });
-    // });
-  };
-
   const toggleFilterTodo = () => {
     if (filter.completed !== false) {
       setFilter({ completed: false });
@@ -103,7 +90,6 @@ function App() {
                 id={todo.id}
                 text={todo.text}
                 completed={todo.completed}
-                onToggle={toggleTodoById}
               />
             ))}
           </List>
