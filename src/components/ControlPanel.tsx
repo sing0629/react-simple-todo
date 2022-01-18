@@ -1,50 +1,90 @@
 // ControlPanel.tsx
 
 import { Box, Button, ButtonGroup, TextField } from "@material-ui/core";
-import React, { FC } from "react";
-import { TodoFilter } from "../App";
+import React, { FC, useState } from "react";
+import { useMutation } from "react-query";
+import { addTodo } from "../api/todo-api";
+import { delTodo } from "../api/todo-api";
+import { TodoFilter, useInvalidateTodo } from "../App";
 
 type ControlPanelProps = {
-  value: string;
   filter: TodoFilter;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onAddTodo: React.MouseEventHandler<HTMLButtonElement>;
-  onReset: () => void;
   onToggleFilterTodo: () => void;
   onToggleFilterCompleted: () => void;
 };
 
 const ControlPanel: FC<ControlPanelProps> = ({
-  value,
   filter,
-  onChange,
-  onAddTodo,
-  onReset,
   onToggleFilterTodo,
   onToggleFilterCompleted,
 }) => {
+  const [value, setValue] = useState("");
+  const { invalidateTodos } = useInvalidateTodo();
+
+  const {
+    mutateAsync: addTodoHandler,
+    isLoading: isAdding,
+    error: addError,
+  } = useMutation(addTodo, {
+    onSuccess: () => {
+      invalidateTodos();
+    },
+  });
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
+  };
+
+  const handleReset = () => {
+    // setTodos(intialTodos);
+    setValue("");
+  };
+
+  const handleAddTodo: React.MouseEventHandler<HTMLButtonElement> = async (
+    event
+  ) => {
+    event.preventDefault();
+
+    const trimedText = value.trim();
+    // Add a new document with a generated id.
+    addTodoHandler(trimedText);
+
+    // reset input after create
+    setValue("");
+  };
+
   return (
     <>
       <form>
         <Box display="flex" alignItems="center">
-          <TextField fullWidth placeholder="Try yourslef!" value={value} onChange={onChange} />
+          <TextField
+            fullWidth
+            placeholder="Try yourslef!"
+            value={value}
+            onChange={handleChange}
+          />
           <Box marginLeft={2}>
             <Button
               disableRipple
-              disabled={!value.trim()}
+              disabled={!value.trim() || isAdding}
               type="submit"
               color="primary"
               variant="contained"
-              onClick={onAddTodo}
+              onClick={handleAddTodo}
             >
-              Add
+              {isAdding ? "Adding..." : "Add"}
             </Button>
           </Box>
         </Box>
       </form>
-      <Box marginY={2} display="flex" alignItems="center" justifyContent="center">
+      <Box
+        marginY={2}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
         <ButtonGroup>
-          <Button disableRipple color="secondary" onClick={onReset}>
+          <Button disableRipple color="secondary" onClick={handleReset}>
             rese todos
           </Button>
           <Button

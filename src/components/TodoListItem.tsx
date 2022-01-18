@@ -11,18 +11,41 @@ import {
 } from "@material-ui/core";
 import { DeleteForever } from "@material-ui/icons";
 import { FC } from "react";
+import { useMutation } from "react-query";
+import { delTodo } from "../api/todo-api";
+import { useInvalidateTodo } from "../App";
 
 type TodoListItemProps = {
-  id: number;
+  id: string;
   text: string;
   completed: boolean;
-  onRemove: (id: number) => void;
-  onToggle: (id: number, value: boolean) => void;
+  onToggle: (id: string, value: boolean) => void;
 };
 
-const TodoListItem: FC<TodoListItemProps> = ({ id, text, completed, onToggle, onRemove }) => {
+const TodoListItem: FC<TodoListItemProps> = ({
+  id,
+  text,
+  completed,
+  onToggle,
+}) => {
+  const { invalidateTodos } = useInvalidateTodo();
+  const {
+    mutateAsync: delTodoHandler,
+    isLoading: isDeleting,
+    error: delError,
+  } = useMutation(delTodo, {
+    onSuccess: () => {
+      invalidateTodos();
+    },
+  });
+
   return (
-    <ListItem dense button onClick={() => onToggle(id, !completed)} disableRipple>
+    <ListItem
+      dense
+      button
+      onClick={() => onToggle(id, !completed)}
+      disableRipple
+    >
       <ListItemIcon>
         <Checkbox
           edge="start"
@@ -43,7 +66,12 @@ const TodoListItem: FC<TodoListItemProps> = ({ id, text, completed, onToggle, on
         }
       />
       <ListItemSecondaryAction>
-        <IconButton edge="end" aria-label="comments" onClick={() => onRemove(id)}>
+        <IconButton
+          disabled={isDeleting}
+          edge="end"
+          aria-label="comments"
+          onClick={() => delTodoHandler(id)}
+        >
           <DeleteForever />
         </IconButton>
       </ListItemSecondaryAction>

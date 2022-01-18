@@ -1,57 +1,57 @@
 // App.tsx
-
 import { Box, List, Typography } from "@material-ui/core";
 import React, { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { delTodo, getTodos } from "./api/todo-api";
 import ControlPanel from "./components/ControlPanel";
 import TodoListItem from "./components/TodoListItem";
 
 export type Todo = {
-  id: number;
+  id: string;
   text: string;
   completed: boolean;
 };
 export type TodoFilter = { completed: null | boolean };
 
-const intialTodos: Todo[] = [
-  { id: 0, text: "Click me to complete", completed: false },
-  { id: 1, text: "<- you can also check this box", completed: true },
-  { id: 2, text: "press the bin to delete ->", completed: false },
-  { id: 3, text: "you can filter me by TODO", completed: false },
-  { id: 4, text: "you can filter me by COMPLETED", completed: true },
-  { id: 5, text: "more advance tutorials are coming...😍⚛️", completed: false },
-];
+// const intialTodos: Todo[] = [
+//   { id: 0, text: "Click me to complete", completed: false },
+//   { id: 1, text: "<- you can also check this box", completed: true },
+//   { id: 2, text: "press the bin to delete ->", completed: false },
+//   { id: 3, text: "you can filter me by TODO", completed: false },
+//   { id: 4, text: "you can filter me by COMPLETED", completed: true },
+//   { id: 5, text: "more advance tutorials are coming...😍⚛️", completed: false },
+// ];
+
+export const useInvalidateTodo = () => {
+  const queryClient = useQueryClient();
+  const invalidateTodos = () => {
+    queryClient.invalidateQueries("todos");
+  };
+
+  return { invalidateTodos };
+};
 
 function App() {
-  const [todos, setTodos] = useState<Todo[]>(intialTodos);
-  const [value, setValue] = useState("");
+  const { data: todos = [], isLoading, error } = useQuery("todos", getTodos);
+
   const [filter, setFilter] = useState<TodoFilter>({ completed: null });
 
   const filteredTodos =
-    filter.completed === null ? todos : todos.filter((todo) => todo.completed === filter.completed);
+    filter.completed === null
+      ? todos
+      : todos.filter((todo) => todo.completed === filter.completed);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-  };
-
-  const toggleTodoById = (id: number, value: boolean) => {
-    setTodos((oldTodos) => {
-      return oldTodos.map((todoItem) => {
-        if (todoItem.id === id) {
-          // if match, change the completed value
-          return { ...todoItem, completed: value };
-        }
-        // remain unchanged
-        return todoItem;
-      });
-    });
-  };
-
-  const removeTodoById = (id: number) => {
-    setTodos((oldTodos) => {
-      // filter out todo item where it's id match
-      // only return todo item id doesn't match
-      return oldTodos.filter((todoItem) => todoItem.id !== id);
-    });
+  const toggleTodoById = (id: string, value: boolean) => {
+    // setTodos((oldTodos) => {
+    //   return oldTodos.map((todoItem) => {
+    //     if (todoItem.id === id) {
+    //       // if match, change the completed value
+    //       return { ...todoItem, completed: value };
+    //     }
+    //     // remain unchanged
+    //     return todoItem;
+    //   });
+    // });
   };
 
   const toggleFilterTodo = () => {
@@ -71,27 +71,9 @@ function App() {
     }
   };
 
-  const handleAddTodo: React.MouseEventHandler<HTMLButtonElement> = (event) => {
-    event.preventDefault();
-    setTodos((oldTodos) => {
-      return [
-        ...oldTodos,
-        {
-          id: oldTodos.length,
-          text: value.trim(),
-          completed: false,
-        },
-      ];
-    });
-    // reset input after create
-    setValue("");
-  };
-
-  const handleReset = () => {
-    setTodos(intialTodos);
-    setValue("");
-  };
-
+  if (error) {
+    return <div>{JSON.stringify(error)}</div>;
+  }
   return (
     <Box maxWidth={400} margin="auto">
       <Box padding={4}>
@@ -102,28 +84,30 @@ function App() {
 
       <Box display="flex" flexDirection="column">
         <ControlPanel
-          value={value}
           filter={filter}
-          onChange={handleChange}
-          onAddTodo={handleAddTodo}
-          onReset={handleReset}
           onToggleFilterTodo={toggleFilterTodo}
           onToggleFilterCompleted={toggleFilterCompleted}
         />
-        <List
-          subheader={<Typography variant="body2">{`${filteredTodos.length} todos`}</Typography>}
-        >
-          {filteredTodos.map((todo, i) => (
-            <TodoListItem
-              key={`todo-item-${i}`}
-              id={todo.id}
-              text={todo.text}
-              completed={todo.completed}
-              onRemove={removeTodoById}
-              onToggle={toggleTodoById}
-            />
-          ))}
-        </List>
+
+        {isLoading ? (
+          <div>Sing Loading...</div>
+        ) : (
+          <List
+            subheader={
+              <Typography variant="body2">{`${filteredTodos.length} todos`}</Typography>
+            }
+          >
+            {filteredTodos.map((todo, i) => (
+              <TodoListItem
+                key={`todo-item-${i}`}
+                id={todo.id}
+                text={todo.text}
+                completed={todo.completed}
+                onToggle={toggleTodoById}
+              />
+            ))}
+          </List>
+        )}
       </Box>
     </Box>
   );
