@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { DeleteForever } from "@material-ui/icons";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { useMutation } from "react-query";
 import { delTodo, updateTodo } from "../api/todo-api";
 import { useInvalidateTodo } from "../App";
@@ -23,6 +23,10 @@ type TodoListItemProps = {
 
 const TodoListItem: FC<TodoListItemProps> = ({ id, text, completed }) => {
   const { invalidateTodos } = useInvalidateTodo();
+  const [done, setDone] = useState(completed);
+  useEffect(() => {
+    setDone(completed);
+  }, [completed]);
 
   const {
     mutateAsync: delTodoHandler,
@@ -45,10 +49,8 @@ const TodoListItem: FC<TodoListItemProps> = ({ id, text, completed }) => {
   });
 
   const handleToggleUpdate = () => {
-    updateTodoHandler({
-      id,
-      completed: !completed,
-    });
+    updateTodoHandler({ id, completed: !done });
+    setDone(!done);
   };
 
   return (
@@ -63,8 +65,8 @@ const TodoListItem: FC<TodoListItemProps> = ({ id, text, completed }) => {
         <Checkbox
           disabled={isUpdating}
           edge="start"
-          defaultChecked={completed}
-          checked={!completed}
+          defaultChecked={done}
+          checked={!done}
           onChange={handleToggleUpdate}
           disableRipple
         />
@@ -72,8 +74,8 @@ const TodoListItem: FC<TodoListItemProps> = ({ id, text, completed }) => {
       <ListItemText
         primary={
           <Typography
-            style={{ textDecoration: completed ? "line-through" : "initial" }}
-            color={completed ? "textSecondary" : "initial"}
+            style={{ textDecoration: done ? "line-through" : "initial" }}
+            color={done ? "textSecondary" : "initial"}
           >
             {text}
           </Typography>

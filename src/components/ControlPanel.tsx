@@ -84,7 +84,7 @@ const ControlPanel: FC<ControlPanelProps> = ({
       >
         <ButtonGroup>
           <Button disableRipple color="secondary" onClick={handleReset}>
-            rese todos
+            reset todos
           </Button>
           <Button
             disableRipple
