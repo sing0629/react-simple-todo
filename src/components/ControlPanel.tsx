@@ -23,7 +23,7 @@ const ControlPanel: FC<ControlPanelProps> = ({
   const {
     mutateAsync: addTodoHandler,
     isLoading: isAdding,
-    error: addError,
+    // error: addError,
   } = useMutation(addTodo, {
     onSuccess: () => {
       invalidateTodos();
