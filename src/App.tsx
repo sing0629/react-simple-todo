@@ -1,8 +1,8 @@
 // App.tsx
 import { Box, List, Typography } from "@material-ui/core";
 import React, { useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
-import { getTodos } from "./api/todo-api";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { delTodo, getTodos } from "./api/todo-api";
 import ControlPanel from "./components/ControlPanel";
 import TodoListItem from "./components/TodoListItem";
 
@@ -12,6 +12,15 @@ export type Todo = {
   completed: boolean;
 };
 export type TodoFilter = { completed: null | boolean };
+
+// const intialTodos: Todo[] = [
+//   { id: 0, text: "Click me to complete", completed: false },
+//   { id: 1, text: "<- you can also check this box", completed: true },
+//   { id: 2, text: "press the bin to delete ->", completed: false },
+//   { id: 3, text: "you can filter me by TODO", completed: false },
+//   { id: 4, text: "you can filter me by COMPLETED", completed: true },
+//   { id: 5, text: "more advance tutorials are coming...😍⚛️", completed: false },
+// ];
 
 export const useInvalidateTodo = () => {
   const queryClient = useQueryClient();

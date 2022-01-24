@@ -10,15 +10,15 @@ import { getFirestore } from "firebase/firestore";
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
 export const firebaseApp = initializeApp({
+  apiKey: "AIzaSyBBuhzyYhKuSf4qf-Cr1SEfFcW6euludvA",
+  authDomain: "xenon-height-280707.firebaseapp.com",
+  databaseURL: "https://xenon-height-280707.firebaseio.com",
+  projectId: "xenon-height-280707",
+  storageBucket: "xenon-height-280707.appspot.com",
+  messagingSenderId: "589262774894",
+  appId: "1:589262774894:web:aa047946a050b8736f7c7f",
   // Initialize Firebase
-  measurementId: process.env.REACT_APP_measurementId,
-  apiKey: process.env.REACT_APP_apiKey,
-  authDomain: process.env.REACT_APP_authDomain,
-  databaseURL: process.env.REACT_APP_databaseURL,
-  projectId: process.env.REACT_APP_projectId,
-  storageBucket: process.env.REACT_APP_storageBucket,
-  messagingSenderId: process.env.REACT_APP_messagingSenderId,
-  appId: process.env.REACT_APP_appId,
+  measurementId: "G-03GQV1007V",
 });
 
 export const db = getFirestore();

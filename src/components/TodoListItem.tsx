@@ -31,7 +31,7 @@ const TodoListItem: FC<TodoListItemProps> = ({ id, text, completed }) => {
   const {
     mutateAsync: delTodoHandler,
     isLoading: isDeleting,
-    // error: delError,
+    error: delError,
   } = useMutation(delTodo, {
     onSuccess: () => {
       invalidateTodos();
@@ -41,7 +41,7 @@ const TodoListItem: FC<TodoListItemProps> = ({ id, text, completed }) => {
   const {
     mutateAsync: updateTodoHandler,
     isLoading: isUpdating,
-    // error: updateError,
+    error: updateError,
   } = useMutation(updateTodo, {
     onSuccess: () => {
       invalidateTodos();
